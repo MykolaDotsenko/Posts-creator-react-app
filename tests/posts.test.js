@@ -113,6 +113,27 @@ describe("post domain", () => {
     expect(restored.lastDeleted).toBeNull();
   });
 
+  it("replaces the whole library atomically and clears deletion history", () => {
+    const previous = {
+      posts: [makePost({ id: "old" })],
+      lastDeleted: { post: makePost({ id: "deleted" }), index: 0 },
+    };
+    const replacement = [makePost({ id: "restored", title: "Restored signal" })];
+
+    expect(
+      postsReducer(previous, { type: "library/replaced", posts: replacement }),
+    ).toEqual({
+      posts: replacement,
+      lastDeleted: null,
+    });
+  });
+
+  it("ignores malformed whole-library replacement actions", () => {
+    const state = { posts: [makePost()], lastDeleted: null };
+
+    expect(postsReducer(state, { type: "library/replaced", posts: null })).toBe(state);
+  });
+
   it("derives overview metrics without duplicating state", () => {
     const posts = [
       { ...makePost({ id: "one", tags: ["a", "b"] }), pinned: true },
