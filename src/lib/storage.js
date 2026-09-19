@@ -11,15 +11,14 @@ export const loadPosts = () => {
     if (!raw) return getDemoPosts();
 
     const payload = JSON.parse(raw);
-    const candidates =
-      payload?.version === STORAGE_VERSION && Array.isArray(payload.posts)
-        ? payload.posts
-        : Array.isArray(payload)
-          ? payload
-          : [];
+    const isVersionedPayload =
+      payload?.version === STORAGE_VERSION && Array.isArray(payload.posts);
+    const isLegacyArray = Array.isArray(payload);
 
-    const posts = candidates.map(normalizePost).filter(Boolean);
-    return posts.length > 0 ? posts : getDemoPosts();
+    if (!isVersionedPayload && !isLegacyArray) return getDemoPosts();
+
+    const candidates = isVersionedPayload ? payload.posts : payload;
+    return candidates.map(normalizePost).filter(Boolean);
   } catch {
     return getDemoPosts();
   }
