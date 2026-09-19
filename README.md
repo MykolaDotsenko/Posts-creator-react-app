@@ -1,18 +1,49 @@
-# SignalDesk
+# SignalDesk — Local-first knowledge workspace
 
 [![Quality](https://github.com/MykolaDotsenko/Posts-creator-react-app/actions/workflows/quality.yml/badge.svg)](https://github.com/MykolaDotsenko/Posts-creator-react-app/actions/workflows/quality.yml)
 
-**A fast, local-first personal signal workspace for ideas, research notes, and useful sources.**
+**A fast, privacy-first React workspace for capturing ideas, research notes, and useful sources — then finding them again without another account, cloud service, or inbox.**
 
-**Live target:** https://mykoladotsenko.github.io/Posts-creator-react-app/
+[**Open the live app →**](https://react-home-work-21-04.vercel.app)
 
-The repository started as a tiny React “add/delete post” exercise. SignalDesk keeps that original idea — capture something worth remembering — and rebuilds it as a useful product with clear state ownership, resilient persistence, retrieval workflows, accessible interaction, automated verification, and a modern responsive UI.
+SignalDesk turns a tiny “add/delete post” training exercise into a focused local-first product. It keeps one canonical source of truth, isolates persistence behind a small adapter, treats accessibility and recovery states as product requirements, and uses modern browser capabilities without adding framework noise.
+
+## Product tour
+
+<p align="center">
+  <img src="./docs/screenshots/signaldesk-desktop.png" alt="SignalDesk desktop dashboard with quick capture, workspace metrics, filters, and signal cards" width="100%" />
+</p>
+
+<table>
+  <tr>
+    <td width="66%">
+      <img src="./docs/screenshots/signaldesk-library.png" alt="SignalDesk filtered favorites library with searchable signal cards" width="100%" />
+    </td>
+    <td width="34%">
+      <img src="./docs/screenshots/signaldesk-mobile.png" alt="SignalDesk responsive mobile capture experience" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Focused retrieval</strong><br/>Search, sort, pin, and favorite useful signals.</td>
+    <td align="center"><strong>Responsive capture</strong><br/>The same workflow stays usable on mobile.</td>
+  </tr>
+</table>
+
+## Why SignalDesk is useful
+
+The product optimizes one repeatable loop:
+
+```text
+Capture → organize → retrieve → refine → revisit
+```
+
+It is deliberately local-first: no signup, no network dependency at runtime, no analytics, and no backend required for the core job.
 
 ## Product capabilities
 
 - create and edit notes, ideas, and source entries
-- comma-separated topic tags with canonical normalization
-- full-library search across title, body, type, and tags
+- normalize up to six topic tags per signal
+- search across title, body, type, and tags
 - pinned and favorite views
 - recently-updated, newest-created, and title sorting
 - derived workspace metrics
@@ -21,7 +52,7 @@ The repository started as a tiny React “add/delete post” exercise. SignalDes
 - corruption-safe storage recovery
 - keyboard shortcuts for capture and search
 - explicit empty and no-results states
-- desktop, tablet, and mobile layouts
+- responsive desktop, tablet, and mobile layouts
 - reduced-motion and forced-colors support
 - no account, analytics, cookies, or network dependency at runtime
 
@@ -35,7 +66,7 @@ The repository started as a tiny React “add/delete post” exercise. SignalDes
 - semantic HTML
 - modern CSS
 
-### UI platform features
+### Modern browser UI
 
 - CSS Grid and Flexbox
 - container queries
@@ -53,7 +84,7 @@ The repository started as a tiny React “add/delete post” exercise. SignalDes
 - Playwright 1.63
 - axe-core
 - GitHub Actions
-- GitHub Pages
+- Vercel
 
 ## Architecture
 
@@ -72,7 +103,31 @@ React UI
 
 The app has one canonical post collection. Filters and statistics are derived rather than duplicated. Browser persistence is isolated from domain transitions.
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the rationale and trade-offs.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the rationale, boundaries, and deliberate trade-offs.
+
+## Quality evidence
+
+The automated suite covers:
+
+- **13 unit/domain/storage tests**
+- **16 browser journeys** across desktop and mobile Chromium
+- create → search → edit → delete → Undo
+- persistence across full reloads
+- pinned and favorites filters
+- legacy/corrupted storage recovery
+- intentionally empty-library behavior
+- keyboard-first workflows
+- axe automated accessibility checks
+- horizontal overflow checks
+- production builds and linting in CI
+
+```bash
+npm ci
+npm run check
+
+npx playwright install chromium
+npm run test:e2e
+```
 
 ## Run locally
 
@@ -82,18 +137,6 @@ Requires Node.js 24+.
 npm ci
 npm run dev
 ```
-
-## Quality checks
-
-```bash
-npm run check
-npx playwright install chromium
-npm run test:e2e
-```
-
-`npm run check` runs lint, unit/domain tests, and a production build.
-
-Browser verification covers the core capture/edit/delete/Undo journey, keyboard shortcuts, automated accessibility checks, and horizontal overflow.
 
 ## Product philosophy
 
