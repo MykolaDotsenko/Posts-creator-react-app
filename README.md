@@ -49,6 +49,8 @@ It is deliberately local-first: no signup, no network dependency at runtime, no 
 - derived workspace metrics
 - one-step Undo after deletion
 - versioned local persistence
+- portable JSON backup and two-step restore
+- explicit session-only warning when browser persistence is unavailable
 - corruption-safe storage recovery
 - keyboard shortcuts for capture and search
 - explicit empty and no-results states
@@ -83,7 +85,7 @@ It is deliberately local-first: no signup, no network dependency at runtime, no 
 - Vitest 5
 - Playwright 1.63
 - axe-core
-- GitHub Actions
+- GitHub Actions with stale-run cancellation and failure trace artifacts
 - Vercel
 
 ## Architecture
@@ -109,12 +111,14 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the rationale, boundaries, and deli
 
 The automated suite covers:
 
-- **13 unit/domain/storage tests**
-- **16 browser journeys** across desktop and mobile Chromium
+- **23 unit/domain/storage/backup tests**
+- **22 browser checks** across desktop Chromium, mobile Chromium, Firefox smoke, and WebKit smoke
 - create → search → edit → delete → Undo
 - persistence across full reloads
 - pinned and favorites filters
 - legacy/corrupted storage recovery
+- export → clear → restore → reload recovery
+- blocked-storage behavior
 - intentionally empty-library behavior
 - keyboard-first workflows
 - axe automated accessibility checks
@@ -125,7 +129,7 @@ The automated suite covers:
 npm ci
 npm run check
 
-npx playwright install chromium
+npx playwright install chromium firefox webkit
 npm run test:e2e
 ```
 
