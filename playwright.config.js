@@ -16,7 +16,23 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "mobile-chromium",
+      use: { ...devices["Pixel 7"] },
+    },
+    {
+      name: "firefox-smoke",
+      testMatch: /smoke\.spec\.js/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit-smoke",
+      testMatch: /smoke\.spec\.js/,
+      use: { ...devices["Desktop Safari"] },
+    },
   ],
 });
