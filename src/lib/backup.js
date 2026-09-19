@@ -2,7 +2,7 @@ import { normalizePost } from "../domain/posts";
 
 const BACKUP_APP = "signaldesk";
 const BACKUP_VERSION = 1;
-export const MAX_BACKUP_BYTES = 1_000_000;
+export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 const MAX_BACKUP_POSTS = 5_000;
 
 const parseJson = (raw) => {
