@@ -25,7 +25,7 @@ export const loadPosts = () => {
 };
 
 export const savePosts = (posts) => {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") return false;
 
   try {
     window.localStorage.setItem(
@@ -35,8 +35,8 @@ export const savePosts = (posts) => {
         posts,
       }),
     );
+    return true;
   } catch {
-    // Storage can be unavailable in privacy modes or quota-constrained browsers.
-    // The in-memory product remains fully usable for the current session.
+    return false;
   }
 };

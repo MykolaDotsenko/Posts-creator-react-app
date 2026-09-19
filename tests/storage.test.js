@@ -67,11 +67,27 @@ describe("storage adapter", () => {
   it("writes the current versioned payload", () => {
     const posts = getDemoPosts().slice(0, 1);
 
-    savePosts(posts);
+    expect(savePosts(posts)).toBe(true);
 
     expect(JSON.parse(values.get(STORAGE_KEY))).toEqual({
       version: 1,
       posts,
     });
+  });
+
+  it("reports a persistence failure without throwing", () => {
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: {
+        localStorage: {
+          getItem: () => null,
+          setItem: () => {
+            throw new DOMException("Storage blocked", "SecurityError");
+          },
+        },
+      },
+    });
+
+    expect(savePosts(getDemoPosts())).toBe(false);
   });
 });

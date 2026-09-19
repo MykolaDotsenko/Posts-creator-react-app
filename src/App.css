@@ -18,6 +18,7 @@
   --accent-strong: #aa9fff;
   --mint: #58e0c0;
   --danger: #ff7b8f;
+  --warning: #ffb767;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
   --radius-xl: 28px;
   --radius-lg: 22px;
@@ -36,6 +37,7 @@
     --accent-strong: oklch(80% 0.13 285);
     --mint: oklch(82% 0.14 170);
     --danger: oklch(72% 0.17 18);
+    --warning: oklch(82% 0.13 75);
   }
 }
 
@@ -179,6 +181,16 @@
   border-radius: 50%;
   background: var(--mint);
   box-shadow: 0 0 12px color-mix(in srgb, var(--mint) 65%, transparent);
+}
+
+.privacy-pill.is-warning {
+  border-color: color-mix(in srgb, var(--warning) 32%, var(--line));
+  color: color-mix(in srgb, var(--warning) 78%, white);
+}
+
+.privacy-pill.is-warning .privacy-dot {
+  background: var(--warning);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--warning) 55%, transparent);
 }
 
 .workspace {

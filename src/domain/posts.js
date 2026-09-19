@@ -149,6 +149,11 @@ export const postsReducer = (state, action) => {
       return { posts, lastDeleted: null };
     }
 
+    case "library/replaced":
+      return Array.isArray(action.posts)
+        ? { posts: action.posts, lastDeleted: null }
+        : state;
+
     default:
       return state;
   }

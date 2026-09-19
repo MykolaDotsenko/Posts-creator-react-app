@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, useReducer } from "react";
 import "./App.css";
 import { AppHeader } from "./components/AppHeader";
 import { Composer } from "./components/Composer";
+import { DataSafety } from "./components/DataSafety";
 import { FilterBar } from "./components/FilterBar";
 import { PostList } from "./components/PostList";
 import { StatsStrip } from "./components/StatsStrip";
@@ -26,13 +27,21 @@ export const App = () => {
   const [view, setView] = useState("all");
   const [sort, setSort] = useState("updated-desc");
   const [editingId, setEditingId] = useState(null);
+  const [persistenceStatus, setPersistenceStatus] = useState("ok");
 
   const composerRef = useRef(null);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
-    savePosts(state.posts);
-  }, [state.posts]);
+    const nextStatus = savePosts(state.posts) ? "ok" : "memory-only";
+    if (nextStatus === persistenceStatus) return undefined;
+
+    const timer = window.setTimeout(() => {
+      setPersistenceStatus(nextStatus);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [persistenceStatus, state.posts]);
 
   useEffect(() => {
     const handleShortcut = (event) => {
@@ -116,12 +125,20 @@ export const App = () => {
     composerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
+  const handleRestore = (posts) => {
+    dispatch({ type: "library/replaced", posts });
+    setEditingId(null);
+    setQuery("");
+    setView("all");
+    setSort("updated-desc");
+  };
+
   return (
     <div className="app-shell" id="top">
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
 
-      <AppHeader onNewPost={handleNewPost} />
+      <AppHeader onNewPost={handleNewPost} persistenceStatus={persistenceStatus} />
 
       <main className="workspace">
         <section className="hero" aria-labelledby="hero-title">
@@ -143,6 +160,8 @@ export const App = () => {
         </section>
 
         <StatsStrip stats={stats} />
+
+        <DataSafety posts={state.posts} onRestore={handleRestore} />
 
         <div className="workspace-grid">
           <aside className="composer-column">

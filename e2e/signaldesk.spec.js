@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("./");
@@ -80,6 +81,40 @@ test("keeps an intentionally empty library empty across reloads", async ({ page 
 
   await page.reload();
   await expect(page.getByText("Your workspace is clear")).toBeVisible();
+});
+
+test("exports and restores a validated backup", async ({ page }) => {
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export backup" }).click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+
+  expect(download.suggestedFilename()).toMatch(/^signaldesk-backup-\d{4}-\d{2}-\d{2}\.json$/);
+  expect(downloadPath).toBeTruthy();
+
+  const exported = JSON.parse(await readFile(downloadPath, "utf8"));
+  expect(exported).toMatchObject({
+    app: "signaldesk",
+    version: 1,
+  });
+  expect(exported.posts).toHaveLength(3);
+
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      "signaldesk:posts",
+      JSON.stringify({ version: 1, posts: [] }),
+    );
+  });
+  await page.reload();
+  await expect(page.getByText("Your workspace is clear")).toBeVisible();
+
+  await page.getByLabel("Restore SignalDesk backup").setInputFiles(downloadPath);
+  await expect(page.getByText("Ready to restore 3 signals")).toBeVisible();
+  await page.getByRole("button", { name: "Restore now" }).click();
+
+  await expect(page.getByRole("article")).toHaveCount(3);
+  await page.reload();
+  await expect(page.getByRole("article")).toHaveCount(3);
 });
 
 test("supports keyboard-first capture and search", async ({ page }) => {
