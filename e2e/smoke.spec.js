@@ -15,6 +15,11 @@ test("core capture and persistence flow works", async ({ page }) => {
   await page.reload();
   await expect(page.getByText("Cross-browser signal")).toBeVisible();
 
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export backup" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^signaldesk-backup-\d{4}-\d{2}-\d{2}\.json$/);
+
   const hasOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
   );
