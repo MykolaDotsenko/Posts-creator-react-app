@@ -79,51 +79,57 @@ export const Composer = forwardRef(function Composer(
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
-        <label className="field">
-          <span>Title</span>
+        <div className="field">
+          <label htmlFor="signal-title">Title</label>
           <input
+            id="signal-title"
             ref={titleInputRef}
             value={draft.title}
             onChange={updateField("title")}
             placeholder="What is worth remembering?"
             maxLength={120}
             autoComplete="off"
+            aria-describedby="signal-title-count"
           />
-          <small>{draft.title.length}/120</small>
-        </label>
+          <small id="signal-title-count">{draft.title.length}/120</small>
+        </div>
 
-        <label className="field">
-          <span>Note</span>
+        <div className="field">
+          <label htmlFor="signal-note">Note</label>
           <textarea
+            id="signal-note"
             value={draft.body}
             onChange={updateField("body")}
             placeholder="Add context, a useful detail, or the next action…"
             maxLength={2000}
             rows={7}
+            aria-describedby="signal-note-count"
           />
-          <small>{draft.body.length}/2000</small>
-        </label>
+          <small id="signal-note-count">{draft.body.length}/2000</small>
+        </div>
 
         <div className="form-row">
-          <label className="field">
-            <span>Type</span>
-            <select value={draft.kind} onChange={updateField("kind")}>
+          <div className="field">
+            <label htmlFor="signal-type">Type</label>
+            <select id="signal-type" value={draft.kind} onChange={updateField("kind")}>
               <option value="note">Note</option>
               <option value="idea">Idea</option>
               <option value="link">Link / source</option>
             </select>
-          </label>
+          </div>
 
-          <label className="field field-wide">
-            <span>Tags</span>
+          <div className="field field-wide">
+            <label htmlFor="signal-tags">Tags</label>
             <input
+              id="signal-tags"
               value={draft.tags}
               onChange={updateField("tags")}
               placeholder="research, product, idea"
               autoComplete="off"
+              aria-describedby="signal-tags-hint"
             />
-            <small>Comma separated · max 6</small>
-          </label>
+            <small id="signal-tags-hint">Comma separated · max 6</small>
+          </div>
         </div>
 
         {error && (
