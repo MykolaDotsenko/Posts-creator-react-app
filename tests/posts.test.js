@@ -68,6 +68,39 @@ describe("post domain", () => {
     ).toEqual(["pinned", "newer"]);
   });
 
+  it("updates content without changing identity and re-normalizes tags", () => {
+    const initialPost = makePost({ id: "stable-id" });
+    const state = { posts: [initialPost], lastDeleted: null };
+
+    const updated = postsReducer(state, {
+      type: "post/updated",
+      id: "stable-id",
+      changes: {
+        title: "  Updated title  ",
+        tags: ["Architecture", "#architecture", "Reliability"],
+        updatedAt: "2026-09-19T13:00:00.000Z",
+      },
+    });
+
+    expect(updated.posts[0]).toMatchObject({
+      id: "stable-id",
+      title: "Updated title",
+      tags: ["architecture", "reliability"],
+      updatedAt: "2026-09-19T13:00:00.000Z",
+    });
+  });
+
+  it("toggles pinned and favorite state independently", () => {
+    const initial = { posts: [makePost()], lastDeleted: null };
+    const pinned = postsReducer(initial, { type: "post/pinnedToggled", id: "post-1" });
+    const favorite = postsReducer(pinned, { type: "post/favoriteToggled", id: "post-1" });
+
+    expect(favorite.posts[0]).toMatchObject({
+      pinned: true,
+      favorite: true,
+    });
+  });
+
   it("restores a deleted item at its previous position", () => {
     const first = makePost({ id: "first" });
     const second = makePost({ id: "second" });
