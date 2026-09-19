@@ -14,10 +14,14 @@ React composition
       +--> pure post domain
       |
       +--> localStorage adapter
+      |
+      +--> backup boundary
 
 User intent -> action -> reducer -> canonical posts -> selectors -> view
                                   |
                                   +-> versioned persistence
+                                  |
+                                  +-> validated JSON export/restore
 ```
 
 ## State ownership
@@ -60,7 +64,24 @@ Properties:
 4. intentionally empty libraries remain empty
 5. storage failure never makes the current session unusable
 
+Persistence failures are observable by the UI: the header switches from “Stored on this device” to a session-only warning instead of implying that writes succeeded.
+
 No account or backend is required for the product's current job.
+
+## Backup boundary
+
+`src/lib/backup.js` owns the portable data contract.
+
+A backup contains:
+
+- an application identifier
+- an explicit schema version
+- export timestamp
+- normalized signal records
+
+Restore is fail-closed: invalid JSON, foreign app identifiers, unsupported versions, malformed records, excessive record counts, and duplicate IDs are rejected before canonical state changes.
+
+The UI uses a two-step restore flow so choosing a file never immediately replaces the user's library. Export uses a browser `Blob` and object URL; restore reads only the file explicitly selected by the user.
 
 ## UX architecture
 
@@ -104,9 +125,11 @@ Pull requests verify:
 - ESLint 10
 - Vitest domain tests
 - Vite production build
-- Playwright desktop/mobile journeys
+- Playwright desktop/mobile Chromium journeys
+- Firefox and WebKit smoke journeys
 - axe automated accessibility smoke checks
 - horizontal overflow checks
+- Playwright traces retained as CI artifacts on failure
 
 ## Deliberate non-features
 
