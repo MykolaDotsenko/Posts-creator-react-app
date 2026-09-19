@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState, useReducer } from "react";
-import { nanoid } from "nanoid";
 import "./App.css";
 import { AppHeader } from "./components/AppHeader";
 import { Composer } from "./components/Composer";
@@ -13,6 +12,10 @@ import {
   postsReducer,
 } from "./domain/posts";
 import { loadPosts, savePosts } from "./lib/storage";
+
+const createId = () =>
+  globalThis.crypto?.randomUUID?.() ??
+  `signal-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 export const App = () => {
   const [state, dispatch] = useReducer(postsReducer, undefined, () => ({
@@ -90,15 +93,13 @@ export const App = () => {
 
     dispatch({
       type: "post/created",
-      post: createPost(draft, nanoid(), now),
+      post: createPost(draft, createId(), now),
     });
   };
 
   const handleDelete = (id) => {
     dispatch({ type: "post/deleted", id });
-    if (editingId === id) {
-      setEditingId(null);
-    }
+    if (editingId === id) setEditingId(null);
   };
 
   const handleNewPost = () => {
@@ -108,7 +109,7 @@ export const App = () => {
   };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" id="top">
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
 
