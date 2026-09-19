@@ -22,7 +22,10 @@ test("captures, finds, edits, and removes a signal with undo", async ({ page }) 
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByText("Caching and stale-data decisions")).toBeVisible();
 
-  await card.getByRole("button", { name: "Delete" }).click();
+  const updatedCard = page
+    .getByRole("article")
+    .filter({ hasText: "Caching and stale-data decisions" });
+  await updatedCard.getByRole("button", { name: "Delete" }).click();
   await expect(page.getByText(/removed/)).toBeVisible();
   await page.getByRole("button", { name: "Undo" }).click();
   await expect(page.getByText("Caching and stale-data decisions")).toBeVisible();
