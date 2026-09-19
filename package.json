@@ -1,7 +1,7 @@
 {
-  "name": "signaldesk",
+  "name": "react-home-work-21.04",
   "private": true,
-  "version": "2.0.0",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
