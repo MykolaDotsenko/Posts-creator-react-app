@@ -21,9 +21,12 @@ export const DataSafety = ({ posts, onRestore }) => {
 
     link.href = url;
     link.download = getBackupFilename();
+    link.hidden = true;
+    document.body.append(link);
     link.click();
+    link.remove();
 
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
     setMessage({
       kind: "success",
       text: `Backup exported with ${posts.length} ${posts.length === 1 ? "signal" : "signals"}.`,
@@ -126,7 +129,10 @@ export const DataSafety = ({ posts, onRestore }) => {
       )}
 
       {message && (
-        <p className={`data-safety-message is-${message.kind}`} role="status">
+        <p
+          className={`data-safety-message is-${message.kind}`}
+          role={message.kind === "error" ? "alert" : "status"}
+        >
           {message.text}
         </p>
       )}
