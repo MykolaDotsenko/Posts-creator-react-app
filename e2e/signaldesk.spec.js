@@ -2,8 +2,9 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => window.localStorage.clear());
   await page.goto("./");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
 });
 
 test("captures, finds, edits, and removes a signal with undo", async ({ page }) => {
@@ -29,6 +30,56 @@ test("captures, finds, edits, and removes a signal with undo", async ({ page }) 
   await expect(page.getByText(/removed/)).toBeVisible();
   await page.getByRole("button", { name: "Undo" }).click();
   await expect(page.getByText("Caching and stale-data decisions")).toBeVisible();
+});
+
+test("persists created signals across a reload", async ({ page }) => {
+  await page.getByLabel("Title", { exact: true }).fill("Persistent signal");
+  await page.getByLabel("Note").fill("This survives a full document reload.");
+  await page.getByRole("button", { name: "Add to SignalDesk" }).click();
+
+  await page.reload();
+
+  await expect(page.getByText("Persistent signal")).toBeVisible();
+  await expect(page.getByText("This survives a full document reload.")).toBeVisible();
+});
+
+test("filters pinned and favorite signals without mutating the library", async ({ page }) => {
+  await page.getByRole("button", { name: /^Pinned/ }).click();
+  await expect(page.getByRole("article")).toHaveCount(1);
+  await expect(page.getByText("Product decisions worth revisiting")).toBeVisible();
+
+  await page.getByRole("button", { name: /^Favorites/ }).click();
+  await expect(page.getByRole("article")).toHaveCount(2);
+  await expect(page.getByText("Small ideas compound")).toBeVisible();
+
+  await page.getByRole("button", { name: /^All/ }).click();
+  await expect(page.getByRole("article")).toHaveCount(3);
+});
+
+test("recovers safely from corrupted persisted data", async ({ page }) => {
+  await page.evaluate(() => {
+    window.localStorage.setItem("signaldesk:posts", "{not valid json");
+  });
+
+  await page.reload();
+
+  await expect(page.getByText("Product decisions worth revisiting")).toBeVisible();
+  await expect(page.getByRole("article")).toHaveCount(3);
+});
+
+test("keeps an intentionally empty library empty across reloads", async ({ page }) => {
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      "signaldesk:posts",
+      JSON.stringify({ version: 1, posts: [] }),
+    );
+  });
+
+  await page.reload();
+  await expect(page.getByText("Your workspace is clear")).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByText("Your workspace is clear")).toBeVisible();
 });
 
 test("supports keyboard-first capture and search", async ({ page }) => {
