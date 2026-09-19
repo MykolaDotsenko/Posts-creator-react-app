@@ -60,7 +60,7 @@ export const PostCard = ({
     </div>
 
     {post.tags.length > 0 && (
-      <ul className="tag-list" aria-label="Tags">
+      <ul className="tag-list" aria-label="Post tags">
         {post.tags.map((tag) => (
           <li key={tag}>#{tag}</li>
         ))}
