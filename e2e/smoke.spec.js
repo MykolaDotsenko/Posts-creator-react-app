@@ -1,0 +1,22 @@
+import { expect, test } from "@playwright/test";
+
+test("core capture and persistence flow works", async ({ page }) => {
+  await page.goto("./");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  await expect(page.getByRole("heading", { name: "Keep the useful things. Lose the noise." })).toBeVisible();
+
+  await page.getByLabel("Title", { exact: true }).fill("Cross-browser signal");
+  await page.getByLabel("Note").fill("Created by the cross-browser smoke suite.");
+  await page.getByRole("button", { name: "Add to SignalDesk" }).click();
+
+  await expect(page.getByText("Cross-browser signal")).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Cross-browser signal")).toBeVisible();
+
+  const hasOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  );
+  expect(hasOverflow).toBe(false);
+});
