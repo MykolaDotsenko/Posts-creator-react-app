@@ -10,7 +10,7 @@ test("captures, finds, edits, and removes a signal with undo", async ({ page }) 
   await page.getByLabel("Title", { exact: true }).fill("Caching decisions");
   await page.getByLabel("Note").fill("Keep stale data visible while refresh retries in the background.");
   await page.getByLabel("Type").selectOption("idea");
-  await page.getByLabel("Tags").fill("architecture, reliability");
+  await page.getByRole("textbox", { name: "Tags", exact: true }).fill("architecture, reliability");
   await page.getByRole("button", { name: "Add to SignalDesk" }).click();
 
   await page.getByPlaceholder("Search title, note, tag…").fill("reliability");
