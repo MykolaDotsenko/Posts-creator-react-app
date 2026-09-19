@@ -33,8 +33,15 @@ export const App = () => {
   const searchInputRef = useRef(null);
 
   useEffect(() => {
-    setPersistenceStatus(savePosts(state.posts) ? "ok" : "memory-only");
-  }, [state.posts]);
+    const nextStatus = savePosts(state.posts) ? "ok" : "memory-only";
+    if (nextStatus === persistenceStatus) return undefined;
+
+    const timer = window.setTimeout(() => {
+      setPersistenceStatus(nextStatus);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [persistenceStatus, state.posts]);
 
   useEffect(() => {
     const handleShortcut = (event) => {
