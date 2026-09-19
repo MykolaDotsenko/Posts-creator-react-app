@@ -102,6 +102,14 @@ export const App = () => {
     if (editingId === id) setEditingId(null);
   };
 
+  const handleEdit = (id) => {
+    setEditingId(id);
+    requestAnimationFrame(() => {
+      composerRef.current?.focus();
+      composerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
+
   const handleNewPost = () => {
     setEditingId(null);
     composerRef.current?.focus();
@@ -171,7 +179,7 @@ export const App = () => {
             <PostList
               posts={visiblePosts}
               hasPosts={state.posts.length > 0}
-              onEdit={setEditingId}
+              onEdit={handleEdit}
               onDelete={handleDelete}
               onToggleFavorite={(id) => dispatch({ type: "post/favoriteToggled", id })}
               onTogglePinned={(id) => dispatch({ type: "post/pinnedToggled", id })}
